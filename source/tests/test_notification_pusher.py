@@ -1,15 +1,37 @@
 import unittest
+import gevent
 import mock
-from notification_pusher import create_pidfile
+import requests
+from notification_pusher import notification_worker
 
 
 class NotificationPusherTestCase(unittest.TestCase):
-    def test_create_pidfile_example(self):
-        pid = 42
-        m_open = mock.mock_open()
-        with mock.patch('notification_pusher.open', m_open, create=True):
-            with mock.patch('os.getpid', mock.Mock(return_value=pid)):
-                create_pidfile('/file/path')
+    def test_notification_worker(self):
+        task = mock.Mock()
+        task.task_id = 4
+        task.data = {'callback_url': 'dummy_url'}
 
-        m_open.assert_called_once_with('/file/path', 'w')
-        m_open().write.assert_called_once_with(str(pid))
+        task_queue = gevent.queue.Queue()
+
+        response = mock.Mock()
+        response.status_code = 400
+
+        with mock.patch('requests.post', mock.Mock(return_value=response)):
+            notification_worker(task, task_queue)
+
+            assert not task_queue.empty()
+
+            task_object = task_queue.get()
+
+            assert task_object[0] == task
+            assert 'ack' == task_object[1]
+
+        with mock.patch('requests.post', mock.Mock(return_value=response, side_effect=requests.RequestException())):
+            notification_worker(task, task_queue)
+
+            assert not task_queue.empty()
+
+            task_object = task_queue.get()
+
+            assert task_object[0] == task
+            assert task_object[1] == 'bury'
