@@ -5,7 +5,7 @@ from lib.worker import get_redirect_history_from_task, worker
 __author__ = 'f1nal'
 
 
-class WorkerTestCase(TestCase):
+class LibWorkerTestCase(TestCase):
     def test_get_redirect_history_from_task_is_input(self):
         # TODO: incapsule
         task = Mock()

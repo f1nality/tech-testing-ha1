@@ -6,7 +6,7 @@ from lib import check_for_meta, make_pycurl_request, get_url, REDIRECT_HTTP, get
 __author__ = 'f1nal'
 
 
-class InitCase(TestCase):
+class LibInitCase(TestCase):
     def test_check_for_meta(self):
         content = '<html><head><meta content="" http-equiv="refresh" content="5; url=/path"></meta></head></html>'
 

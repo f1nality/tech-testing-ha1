@@ -7,7 +7,7 @@ from lib.utils import daemonize, load_config_from_pyfile, parse_cmd_args, create
 __author__ = 'f1nal'
 
 
-class UtilsCase(TestCase):
+class LibUtilsCase(TestCase):
     def test_daemonize_child_ok(self):
         with patch('os._exit', create=True) as exit_mock:
             with patch('os.fork', mock.Mock(return_value=0)):
