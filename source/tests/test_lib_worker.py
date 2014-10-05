@@ -49,25 +49,39 @@ class WorkerTestCase(TestCase):
     def test_worker(self):
         config = Mock()
 
-        config.INPUT_QUEUE_HOST = 'host'
-        config.INPUT_QUEUE_PORT = '80'
-        config.INPUT_QUEUE_SPACE = 1
-        config.INPUT_QUEUE_TUBE = 'tube'
+        task = Mock()
+        task_ack = Mock()
 
-        config.OUTPUT_QUEUE_HOST = 'host'
-        config.OUTPUT_QUEUE_PORT = 81
-        config.OUTPUT_QUEUE_SPACE = 2
-        config.OUTPUT_QUEUE_TUBE = 'tube'
+        task_meta_pri = 'fri'
+
+        task.task_id = 55
+        task.meta = Mock(return_value={
+            'pri': task_meta_pri
+        })
+        task.ack = task_ack
 
         tube = Mock()
+        tube_put = Mock()
 
-        tube.queue.host = 'host'
-        tube.queue.port = 'port'
-        tube.queue.space = 'space'
         tube.opt = {'tube': 'tube_name'}
+        tube.take = Mock(return_value=task)
+        tube.put = tube_put
+
+        parent_pid = 32
+
+        is_input = True
+        data = []
 
         with patch('lib.worker.get_tube', Mock(return_value=tube)):
-            worker(config, 32)
+            with patch('lib.worker.os.path.exists', Mock(side_effect=(
+                    True, False
+            ))):
+                with patch('lib.worker.get_redirect_history_from_task', Mock(return_value=(is_input, data))):
+                    worker(config, parent_pid)
 
-        # TODO
-        pass
+                    tube_put.assert_called_once_with(
+                        [],
+                        delay=config.RECHECK_DELAY,
+                        pri=task_meta_pri
+                    )
+                    task_ack.assert_called_once_with()
