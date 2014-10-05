@@ -20,6 +20,7 @@ if __name__ == '__main__':
         unittest.makeSuite(RedirectCheckerTestCase),
         unittest.makeSuite(LibInitCase),
         unittest.makeSuite(LibUtilsCase),
+        unittest.makeSuite(LibWorkerTestCase),
     ))
     result = unittest.TextTestRunner().run(suite)
     sys.exit(not result.wasSuccessful())
