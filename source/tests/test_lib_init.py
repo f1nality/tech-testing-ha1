@@ -49,13 +49,13 @@ class LibInitCase(TestCase):
 
         assert not redirect_url
 
-    def test_make_pycurl_request_mocked_getinfo(self, info):
+    def make_pycurl_request_mocked_getinfo(self, info):
         if info == self.mocked_curl.REDIRECT_URL:
             return 'redirect_url'
         else:
             return info
 
-    def test_make_pycurl_request_mocked_getinfo_none_redirect_url(self, info):
+    def make_pycurl_request_mocked_getinfo_none_redirect_url(self, info):
         if info == self.mocked_curl.REDIRECT_URL:
             return None
         else:
@@ -66,7 +66,7 @@ class LibInitCase(TestCase):
         user_agent = 'user_agent'
 
         mocked_curl = Mock()
-        mocked_curl.getinfo = Mock(side_effect=self.test_make_pycurl_request_mocked_getinfo)
+        mocked_curl.getinfo = Mock(side_effect=self.make_pycurl_request_mocked_getinfo)
 
         mocked_buff = Mock()
         mocked_buff.getvalue = Mock(return_value=my_content)
@@ -85,7 +85,7 @@ class LibInitCase(TestCase):
         user_agent = None
 
         mocked_curl = Mock()
-        mocked_curl.getinfo = Mock(side_effect=self.test_make_pycurl_request_mocked_getinfo)
+        mocked_curl.getinfo = Mock(side_effect=self.make_pycurl_request_mocked_getinfo)
 
         mocked_buff = Mock()
         mocked_buff.getvalue = Mock(return_value=my_content)
@@ -103,7 +103,7 @@ class LibInitCase(TestCase):
         my_content = 'content'
 
         mocked_curl = Mock()
-        mocked_curl.getinfo = Mock(side_effect=self.test_make_pycurl_request_mocked_getinfo_none_redirect_url)
+        mocked_curl.getinfo = Mock(side_effect=self.make_pycurl_request_mocked_getinfo_none_redirect_url)
 
         mocked_buff = Mock()
         mocked_buff.getvalue = Mock(return_value=my_content)

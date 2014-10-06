@@ -61,13 +61,13 @@ class LibUtilsCase(TestCase):
         m_open.assert_called_once_with('/file/path', 'w')
         m_open().write.assert_called_once_with(str(pid))
 
-    def test_load_config_from_pyfile_execfile_patch(self, filepath, variables):
+    def load_config_from_pyfile_execfile_patch(self, filepath, variables):
         variables['VAR1'] = 1
         variables['VAR2'] = {'var2_1': 5}
         variables['lower_var'] = 2
 
     def test_load_config_from_pyfile(self):
-        with patch('__builtin__.execfile', side_effect=self.test_load_config_from_pyfile_execfile_patch):
+        with patch('__builtin__.execfile', side_effect=self.load_config_from_pyfile_execfile_patch):
             cfg = load_config_from_pyfile('dummy.py')
 
             assert cfg.VAR1 == 1
