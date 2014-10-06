@@ -2,9 +2,17 @@ import unittest
 from mock import Mock, patch
 from redirect_checker import main, main_loop
 from lib.worker import worker
+import redirect_checker
 
 
 class RedirectCheckerTestCase(unittest.TestCase):
+    def setUp(self):
+        self.original_logger = redirect_checker.logger
+        redirect_checker.logger = Mock()
+
+    def tearDown(self):
+        redirect_checker.logger = self.original_logger
+
     @patch('redirect_checker.dictConfig', Mock())
     def test_main(self):
         args = Mock()

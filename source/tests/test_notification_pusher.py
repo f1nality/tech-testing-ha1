@@ -10,6 +10,13 @@ from mock import Mock, patch, call
 
 
 class NotificationPusherTestCase(unittest.TestCase):
+    def setUp(self):
+        self.original_logger = notification_pusher.logger
+        notification_pusher.logger = Mock()
+
+    def tearDown(self):
+        notification_pusher.logger = self.original_logger
+
     def test_notification_worker_put_task(self):
         task = mock.Mock()
         task.task_id = 4

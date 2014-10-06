@@ -1,11 +1,19 @@
 from unittest import TestCase
 from mock import Mock, patch
+import lib
 from lib.worker import get_redirect_history_from_task, worker
 
 __author__ = 'f1nal'
 
 
 class LibWorkerTestCase(TestCase):
+    def setUp(self):
+        self.original_logger = lib.worker.logger
+        lib.worker.logger = Mock()
+
+    def tearDown(self):
+        lib.worker.logger = self.original_logger
+
     def test_get_redirect_history_from_task_is_input(self):
         task = Mock()
         task.task_id = 5

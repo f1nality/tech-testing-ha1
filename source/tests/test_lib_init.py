@@ -7,6 +7,13 @@ import lib
 
 
 class LibInitCase(TestCase):
+    def setUp(self):
+        self.original_logger = lib.logger
+        lib.logger = Mock()
+
+    def tearDown(self):
+        lib.logger = self.original_logger
+
     def test_check_for_meta_ok(self):
         content = '<html><head><meta http-equiv="refresh" content="5; url=/path"></meta></head></html>'
 
