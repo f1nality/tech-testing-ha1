@@ -161,14 +161,13 @@ class LibInitCase(TestCase):
 
     def test_get_url_redirect_url_none_meta_none(self):
         my_content = 'content'
-        my_prepared_redirect_url = 'redirect_url_form_meta'
 
         with patch('lib.make_pycurl_request', Mock(return_value=(my_content, None))):
             with patch('lib.prepare_url', Mock(side_effect=self.mocked_lib_prepare_url)):
                 with patch('lib.check_for_meta', Mock(return_value=None)):
                     prepared_redirect_url, redirect_type, content = get_url('url', 11)
 
-                    assert prepared_redirect_url == my_prepared_redirect_url
+                    assert prepared_redirect_url is None
                     assert redirect_type is None
                     assert content == my_content
 
