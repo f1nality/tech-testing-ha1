@@ -89,10 +89,9 @@ class LibUtilsCase(TestCase):
         assert parsed.pidfile == '/var/pid.file'
 
     def test_spawn_workers(self):
-        mocked_process = Mock()
         workers_num = 4
 
-        with patch('lib.utils.Process', mocked_process):
+        with patch('lib.utils.Process') as mocked_process:
             spawn_workers(workers_num, 'target', 'args', 'parent_pid')
             assert mocked_process.call_count == workers_num
 
@@ -117,10 +116,7 @@ class LibUtilsCase(TestCase):
         name = 'name'
 
         mocked_queue = Mock()
-        mocked_queue_tube = Mock()
-
-        mocked_queue.tube = mocked_queue_tube
 
         with patch('lib.utils.tarantool_queue.Queue', Mock(return_value=mocked_queue)):
             get_tube(host, port, space, name)
-            mocked_queue_tube.assert_called_once_with(name)
+            mocked_queue.tube.assert_called_once_with(name)

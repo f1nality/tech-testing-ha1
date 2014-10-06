@@ -15,17 +15,12 @@ class RedirectCheckerTestCase(unittest.TestCase):
         mocked_config = Mock()
         mocked_config.EXIT_CODE = 44
 
-        mocked_daemonize = Mock()
-        mocked_create_pidfile = Mock()
-        mocked_load_config_from_pyfile = Mock(return_value=mocked_config)
-
-        mocked_main_loop = Mock()
-
         with patch('redirect_checker.parse_cmd_args', Mock(return_value=args)):
-            with patch('redirect_checker.daemonize', mocked_daemonize):
-                with patch('redirect_checker.create_pidfile', mocked_create_pidfile):
-                    with patch('redirect_checker.load_config_from_pyfile', mocked_load_config_from_pyfile):
-                        with patch('redirect_checker.main_loop', mocked_main_loop):
+            with patch('redirect_checker.daemonize') as mocked_daemonize:
+                with patch('redirect_checker.create_pidfile') as mocked_create_pidfile:
+                    with patch('redirect_checker.load_config_from_pyfile',
+                               Mock(return_value=mocked_config)) as mocked_load_config_from_pyfile:
+                        with patch('redirect_checker.main_loop') as mocked_main_loop:
                             assert main('args') == mocked_config.EXIT_CODE
 
                             mocked_daemonize.assert_called_once_with()
@@ -43,17 +38,12 @@ class RedirectCheckerTestCase(unittest.TestCase):
         mocked_config = Mock()
         mocked_config.EXIT_CODE = 44
 
-        mocked_daemonize = Mock()
-        mocked_create_pidfile = Mock()
-        mocked_load_config_from_pyfile = Mock(return_value=mocked_config)
-
-        mocked_main_loop = Mock()
-
         with patch('redirect_checker.parse_cmd_args', Mock(return_value=args)):
-            with patch('redirect_checker.daemonize', mocked_daemonize):
-                with patch('redirect_checker.create_pidfile', mocked_create_pidfile):
-                    with patch('redirect_checker.load_config_from_pyfile', mocked_load_config_from_pyfile):
-                        with patch('redirect_checker.main_loop', mocked_main_loop):
+            with patch('redirect_checker.daemonize') as mocked_daemonize:
+                with patch('redirect_checker.create_pidfile') as mocked_create_pidfile:
+                    with patch('redirect_checker.load_config_from_pyfile',
+                               Mock(return_value=mocked_config)) as mocked_load_config_from_pyfile:
+                        with patch('redirect_checker.main_loop') as mocked_main_loop:
                             assert main('args') == mocked_config.EXIT_CODE
 
                             assert not mocked_daemonize.called
@@ -67,11 +57,10 @@ class RedirectCheckerTestCase(unittest.TestCase):
         mocked_config = Mock()
         mocked_config.WORKER_POOL_SIZE = 5
 
-        mocked_spawn_workers = Mock()
         active_children = [1, 2]
         parent_pid = 5
 
-        with patch('redirect_checker.spawn_workers', mocked_spawn_workers):
+        with patch('redirect_checker.spawn_workers') as mocked_spawn_workers:
             with patch('redirect_checker.os.getpid', Mock(return_value=parent_pid)):
                 with patch('redirect_checker.active_children', Mock(side_effect=(
                         active_children, Exception
@@ -94,11 +83,10 @@ class RedirectCheckerTestCase(unittest.TestCase):
         mocked_config = Mock()
         mocked_config.WORKER_POOL_SIZE = 5
 
-        mocked_spawn_workers = Mock()
         active_children = [1, 2, 3, 4, 5]
         parent_pid = 5
 
-        with patch('redirect_checker.spawn_workers', mocked_spawn_workers):
+        with patch('redirect_checker.spawn_workers') as mocked_spawn_workers:
             with patch('redirect_checker.os.getpid', Mock(return_value=parent_pid)):
                 with patch('redirect_checker.active_children', Mock(side_effect=(
                         active_children, Exception

@@ -7,7 +7,6 @@ __author__ = 'f1nal'
 
 class LibWorkerTestCase(TestCase):
     def test_get_redirect_history_from_task_is_input(self):
-        # TODO: incapsule
         task = Mock()
         task.task_id = 5
         task.data = {
@@ -68,28 +67,17 @@ class LibWorkerTestCase(TestCase):
             assert not is_input
 
     def test_worker(self):
-        # TODO: incapsulate
         config = Mock()
 
         task = Mock()
-        task_ack = Mock()
-
         task_meta_pri = 'fri'
-
-        task.task_id = 55
         task.meta = Mock(return_value={
             'pri': task_meta_pri
         })
-        task.ack = task_ack
 
         tube = Mock()
-        tube_put = Mock()
-
         tube.opt = {'tube': 'tube_name'}
         tube.take = Mock(return_value=task)
-        tube.put = tube_put
-
-        parent_pid = 32
 
         is_input = True
         data = []
@@ -99,37 +87,27 @@ class LibWorkerTestCase(TestCase):
                     True, False
             ))):
                 with patch('lib.worker.get_redirect_history_from_task', Mock(return_value=(is_input, data))):
-                    worker(config, parent_pid)
+                    worker(config, 42)
 
-                    tube_put.assert_called_once_with(
+                    tube.put.assert_called_once_with(
                         data,
                         delay=config.RECHECK_DELAY,
                         pri=task_meta_pri
                     )
-                    task_ack.assert_called_once_with()
+                    task.ack.assert_called_once_with()
 
     def test_worker_is_not_input(self):
         config = Mock()
 
         task = Mock()
-        task_ack = Mock()
-
         task_meta_pri = 'fri'
-
-        task.task_id = 55
         task.meta = Mock(return_value={
             'pri': task_meta_pri
         })
-        task.ack = task_ack
 
         tube = Mock()
-        tube_put = Mock()
-
         tube.opt = {'tube': 'tube_name'}
         tube.take = Mock(return_value=task)
-        tube.put = tube_put
-
-        parent_pid = 32
 
         is_input = False
         data = []
@@ -139,9 +117,9 @@ class LibWorkerTestCase(TestCase):
                     True, False
             ))):
                 with patch('lib.worker.get_redirect_history_from_task', Mock(return_value=(is_input, data))):
-                    worker(config, parent_pid)
+                    worker(config, 32)
 
-                    tube_put.assert_called_once_with(
+                    tube.put.assert_called_once_with(
                         data
                     )
-                    task_ack.assert_called_once_with()
+                    task.ack.assert_called_once_with()

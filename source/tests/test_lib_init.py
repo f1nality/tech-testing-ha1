@@ -4,9 +4,6 @@ from mock import Mock, patch, call
 from lib import check_for_meta, make_pycurl_request, get_url, REDIRECT_HTTP, get_redirect_history, prepare_url, \
     REDIRECT_META, fix_market_url, get_counters
 import lib
-from pycurl import Curl
-
-__author__ = 'f1nal'
 
 
 class LibInitCase(TestCase):
@@ -67,7 +64,7 @@ class LibInitCase(TestCase):
         mocked_buff = Mock()
         mocked_buff.getvalue = Mock(return_value=my_content)
 
-        with patch('pycurl.Curl', Mock(return_value=mocked_curl), create=True):
+        with patch('pycurl.Curl', Mock(return_value=mocked_curl)):
             with patch('lib.StringIO', Mock(return_value=mocked_buff)):
                 self.mocked_curl = mocked_curl
                 content, redirect_url = make_pycurl_request('url', 11, user_agent)
@@ -86,7 +83,7 @@ class LibInitCase(TestCase):
         mocked_buff = Mock()
         mocked_buff.getvalue = Mock(return_value=my_content)
 
-        with patch('pycurl.Curl', Mock(return_value=mocked_curl), create=True):
+        with patch('pycurl.Curl', Mock(return_value=mocked_curl)):
             with patch('lib.StringIO', Mock(return_value=mocked_buff)):
                 self.mocked_curl = mocked_curl
                 content, redirect_url = make_pycurl_request('url', 11, user_agent)
@@ -104,7 +101,7 @@ class LibInitCase(TestCase):
         mocked_buff = Mock()
         mocked_buff.getvalue = Mock(return_value=my_content)
 
-        with patch('pycurl.Curl', Mock(return_value=mocked_curl), create=True):
+        with patch('pycurl.Curl', Mock(return_value=mocked_curl)):
             with patch('lib.StringIO', Mock(return_value=mocked_buff)):
                 self.mocked_curl = mocked_curl
                 content, redirect_url = make_pycurl_request('url', 11)
@@ -182,8 +179,8 @@ class LibInitCase(TestCase):
         with patch('lib.make_pycurl_request', Mock(return_value=(my_content, redirect_url))):
             prepared_redirect_url, redirect_type, content = get_url('url', 11, 'user_agent')
 
-            assert not prepared_redirect_url
-            assert not redirect_type
+            assert prepared_redirect_url is None
+            assert redirect_type is None
             assert content == my_content
 
     def test_get_redirect_history(self):
@@ -215,12 +212,14 @@ class LibInitCase(TestCase):
         assert http_url == my_http_url
 
     def test_get_counters(self):
+        ORIGINAL_COUNTER_TYPES = lib.COUNTER_TYPES
         lib.COUNTER_TYPES = (
             ('GOOGLE_ANALYTICS', re.compile(r'.*google-analytics\.com/ga\.js.*', re.I+re.S)),
             ('YA_METRICA', re.compile(r'.*mc\.yandex\.ru/metrika/watch\.js.*', re.I+re.S)),
         )
 
         counters = get_counters('mc.yandex.ru/metrika/watch.js')
+        lib.COUNTER_TYPES = ORIGINAL_COUNTER_TYPES
 
         assert 'YA_METRICA' in counters
         assert 'GOOGLE_ANALYTICS' not in counters
